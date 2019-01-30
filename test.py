@@ -4,5 +4,10 @@ import struct
 import array
 
 import lib.zcore as zcore
+import time
 
-print(zcore.is_address('ZM4K3vP6ubuvo1ZNfyEYszpKPyTCfFyRuL'))
+ts = time.time()
+hts = ts.hex()
+print(ts)
+print(hts)
+print(int(bytes.fromhex(hts)))

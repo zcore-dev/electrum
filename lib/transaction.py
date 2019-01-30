@@ -907,7 +907,7 @@ class Transaction:
     def serialize_preimage(self, i):
         nVersion = int_to_hex(self.version, 4)
         nHashType = int_to_hex(1, 4)
-        nLocktime = int_to_hex(self.locktime, 4)
+        nLocktime = int_to_hex(0, 4)
         inputs = self.inputs()
         outputs = self.outputs()
         txin = inputs[i]
@@ -933,7 +933,7 @@ class Transaction:
 
     def serialize(self, estimate_size=False, witness=True):
         nVersion = int_to_hex(self.version, 4)
-        nLocktime = int_to_hex(self.locktime, 4)
+        nLocktime = int_to_hex(0, 4)
         inputs = self.inputs()
         outputs = self.outputs()
         txins = var_int(len(inputs)) + ''.join(self.serialize_input(txin, self.input_script(txin, estimate_size)) for txin in inputs)
