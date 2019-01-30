@@ -156,7 +156,7 @@ class SeedLayout(QVBoxLayout):
         return ' '.join(text.split())
 
     def on_edit(self):
-        from electrum.bitcoin import seed_type
+        from electrum.zcore import seed_type
         s = self.get_seed()
         b = self.is_seed(s)
         if not self.is_bip39:

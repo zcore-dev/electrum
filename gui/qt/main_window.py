@@ -40,7 +40,7 @@ from .exception_window import Exception_Hook
 from PyQt5.QtWidgets import *
 
 from electrum import keystore, simple_config, ecc
-from electrum.bitcoin import COIN, is_address, TYPE_ADDRESS
+from electrum.zcore import COIN, is_address, TYPE_ADDRESS
 from electrum import constants
 from electrum.plugins import run_hook
 from electrum.i18n import _
@@ -51,7 +51,7 @@ from electrum.util import (format_time, format_satoshis, format_fee_satoshis,
                            base_units, base_units_list, base_unit_name_to_decimal_point,
                            decimal_point_to_base_unit_name, quantize_feerate)
 from electrum import Transaction
-from electrum import util, bitcoin, commands, coinchooser
+from electrum import util, zcore, commands, coinchooser
 from electrum import paymentrequest
 from electrum.wallet import Multisig_Wallet, AddTransactionException
 
@@ -555,7 +555,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         d = self.network.get_donation_address()
         if d:
             host = self.network.get_parameters()[0]
-            self.pay_to_URI('bitcoin:%s?message=donation for %s'%(d, host))
+            self.pay_to_URI('zcore:%s?message=donation for %s'%(d, host))
         else:
             self.show_error(_('No donation address for this server'))
 
@@ -886,7 +886,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             URI += "&exp=%d"%req.get('exp')
         if req.get('name') and req.get('sig'):
             sig = bfh(req.get('sig'))
-            sig = bitcoin.base_encode(sig, base=58)
+            sig = zcore.base_encode(sig, base=58)
             URI += "&name=" + req['name'] + "&sig="+sig
         return str(URI)
 
@@ -1012,7 +1012,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.tabs.setCurrentIndex(self.tabs.indexOf(self.receive_tab))
 
     def receive_at(self, addr):
-        if not bitcoin.is_address(addr):
+        if not zcore.is_address(addr):
             return
         self.show_receive_tab()
         self.receive_address_e.setText(addr)
@@ -1477,8 +1477,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             if addr is None:
                 self.show_error(_('Bitcoin Address is None'))
                 return
-            if _type == TYPE_ADDRESS and not bitcoin.is_address(addr):
-                self.show_error(_('Invalid Bitcoin Address'))
+            if _type == TYPE_ADDRESS and not zcore.is_address(addr):
+                self.show_error(_('Invalid ZCore Address'))
                 return
             if amount is None:
                 self.show_error(_('Invalid Amount'))
@@ -1696,7 +1696,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         try:
             out = util.parse_URI(URI, self.on_pr)
         except BaseException as e:
-            self.show_error(_('Invalid bitcoin URI:') + '\n' + str(e))
+            self.show_error(_('Invalid zcore URI:') + '\n' + str(e))
             return
         self.show_send_tab()
         r = out.get('r')
@@ -1904,7 +1904,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
                                  'network' : self.network,
                                  'plugins' : self.gui_object.plugins,
                                  'window': self})
-        console.updateNamespace({'util' : util, 'bitcoin':bitcoin})
+        console.updateNamespace({'util' : util, 'zcore':zcore})
 
         c = commands.Commands(self.config, self.wallet, self.network, lambda: self.console.set_json(True))
         methods = {}
@@ -2114,7 +2114,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             traceback.print_exc(file=sys.stdout)
             self.show_message(str(e))
             return
-        xtype = bitcoin.deserialize_privkey(pk)[0]
+        xtype = zcore.deserialize_privkey(pk)[0]
         d = WindowModalDialog(self, _("Private key"))
         d.setMinimumSize(600, 150)
         vbox = QVBoxLayout()
@@ -2143,8 +2143,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
     def do_sign(self, address, message, signature, password):
         address  = address.text().strip()
         message = message.toPlainText().strip()
-        if not bitcoin.is_address(address):
-            self.show_message(_('Invalid Bitcoin address.'))
+        if not zcore.is_address(address):
+            self.show_message(_('Invalid zcore address.'))
             return
         if self.wallet.is_watching_only():
             self.show_message(_('This is a watching-only wallet.'))
@@ -2171,8 +2171,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
     def do_verify(self, address, message, signature):
         address  = address.text().strip()
         message = message.toPlainText().strip().encode('utf-8')
-        if not bitcoin.is_address(address):
-            self.show_message(_('Invalid Bitcoin address.'))
+        if not zcore.is_address(address):
+            self.show_message(_('Invalid zcore address.'))
             return
         try:
             # This can throw on invalid base64
@@ -2314,12 +2314,12 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if not data:
             return
         # if the user scanned a bitcoin URI
-        if str(data).startswith("bitcoin:"):
+        if str(data).startswith("zcore:"):
             self.pay_to_URI(data)
             return
         # else if the user scanned an offline signed tx
         try:
-            data = bh2u(bitcoin.base_decode(data, length=None, base=43))
+            data = bh2u(zcore.base_decode(data, length=None, base=43))
         except BaseException as e:
             self.show_error((_('Could not decode QR code')+':\n{}').format(e))
             return
@@ -2515,7 +2515,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         def get_address():
             addr = str(address_e.text()).strip()
-            if bitcoin.is_address(addr):
+            if zcore.is_address(addr):
                 return addr
 
         def get_pk():

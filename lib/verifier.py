@@ -21,7 +21,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from .util import ThreadJob
-from .bitcoin import *
+from .zcore import *
 
 
 class SPV(ThreadJob):

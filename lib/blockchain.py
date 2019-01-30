@@ -24,12 +24,11 @@ import os
 import threading
 
 from . import util
-from . import bitcoin
+from . import zcore
 from . import constants
-from .bitcoin import *
+from .zcore import *
 
-MAX_TARGET = 0x00000000FFFF0000000000000000000000000000000000000000000000000000
-
+MAX_TARGET = 0x00000fffff000000000000000000000000000000000000000000000000000000
 
 class MissingHeader(Exception):
     pass
@@ -39,10 +38,17 @@ def serialize_header(res):
     s = int_to_hex(res.get('version'), 4) \
         + rev_hex(res.get('prev_block_hash')) \
         + rev_hex(res.get('merkle_root')) \
-        + int_to_hex(int(res.get('timestamp')), 4) \
-        + int_to_hex(int(res.get('bits')), 4) \
-        + int_to_hex(int(res.get('nonce')), 4)
+        + rev_hex(int_to_hex(int(res.get('timestamp')), 4)) \
+        + rev_hex(int_to_hex(int(res.get('bits')), 4)) \
+        + rev_hex(int_to_hex(int(res.get('nonce')), 4))
     return s
+
+def reverse_bytes_hex(x):
+    if instanceof(x,bytes):
+        out = bytes.fromhex(rev_hex(x.hex()))
+        return out
+    else:
+        raise Exception('Should be bytes')
 
 def deserialize_header(s, height):
     if not s:
@@ -61,11 +67,13 @@ def deserialize_header(s, height):
     return h
 
 def hash_header(header):
+    from lib.crypto import Hash_Header
     if header is None:
         return '0' * 64
     if header.get('prev_block_hash') is None:
         header['prev_block_hash'] = '00'*32
-    return hash_encode(Hash(bfh(serialize_header(header))))
+    h = hash_encode(Hash_Header(bfh(serialize_header(header)),header.get('timestamp')))
+    return h
 
 
 blockchains = {}

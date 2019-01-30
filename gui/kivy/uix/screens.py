@@ -18,7 +18,7 @@ from kivy.factory import Factory
 from kivy.utils import platform
 
 from electrum.util import profiler, parse_URI, format_time, InvalidPassword, NotEnoughFunds, Fiat
-from electrum import bitcoin
+from electrum import zcore
 from electrum.util import timestamp_to_datetime
 from electrum.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
 
@@ -147,7 +147,7 @@ class HistoryScreen(CScreen):
             ri.amount = self.app.format_amount_and_units(value)
             if self.app.fiat_unit:
                 fx = self.app.fx
-                fiat_value = value / Decimal(bitcoin.COIN) * self.app.wallet.price_at_timestamp(tx_hash, fx.timestamp_rate)
+                fiat_value = value / Decimal(zcore.COIN) * self.app.wallet.price_at_timestamp(tx_hash, fx.timestamp_rate)
                 fiat_value = Fiat(fiat_value, fx.ccy)
                 ri.quote_text = str(fiat_value)
         return ri
@@ -245,7 +245,7 @@ class SendScreen(CScreen):
             if not address:
                 self.app.show_error(_('Recipient not specified.') + ' ' + _('Please scan a Bitcoin address or a payment request'))
                 return
-            if not bitcoin.is_address(address):
+            if not zcore.is_address(address):
                 self.app.show_error(_('Invalid Bitcoin Address') + ':\n' + address)
                 return
             try:
@@ -253,7 +253,7 @@ class SendScreen(CScreen):
             except:
                 self.app.show_error(_('Invalid amount') + ':\n' + self.screen.amount)
                 return
-            outputs = [(bitcoin.TYPE_ADDRESS, address, amount)]
+            outputs = [(zcore.TYPE_ADDRESS, address, amount)]
         message = self.screen.message
         amount = sum(map(lambda x:x[2], outputs))
         if self.app.electrum_config.get('use_rbf'):

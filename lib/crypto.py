@@ -31,6 +31,8 @@ import pyaes
 
 from .util import assert_bytes, InvalidPassword, to_bytes, to_string
 
+import neoscrypt
+import Lyra2Z_scrypt as lyra2z
 
 try:
     from Cryptodome.Cipher import AES
@@ -125,9 +127,16 @@ def sha256(x: bytes) -> bytes:
     return bytes(hashlib.sha256(x).digest())
 
 
-def Hash(x: bytes) -> bytes:
+def Hash(x:bytes) -> bytes:
     x = to_bytes(x, 'utf8')
-    out = bytes(sha256(sha256(x)))
+    return bytes(sha256(sha256(x)))
+
+def Hash_Header(x: bytes, ts=0) -> bytes:
+    x = to_bytes(x, 'utf8')
+    if ts <= 1535760000:
+        out = neoscrypt.getPoWHash(x)
+    else:
+        out = lyra2z.getPoWHash(x)
     return out
 
 

@@ -25,7 +25,7 @@
 from collections import defaultdict, namedtuple
 from math import floor, log10
 
-from .bitcoin import sha256, COIN, TYPE_ADDRESS, is_address
+from .zcore import sha256, COIN, TYPE_ADDRESS, is_address
 from .transaction import Transaction
 from .util import NotEnoughFunds, PrintError
 

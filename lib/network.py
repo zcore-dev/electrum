@@ -35,8 +35,8 @@ import json
 
 import socks
 from . import util
-from . import bitcoin
-from .bitcoin import *
+from . import zcore
+from .zcore import *
 from . import constants
 from .interface import Connection, Interface
 from . import blockchain
@@ -175,7 +175,7 @@ class Network(util.DaemonThread):
         if self.blockchain_index not in self.blockchains.keys():
             self.blockchain_index = 0
         # Server for addresses and transactions
-        self.default_server = self.config.get('server', None)
+        self.default_server = '66.42.93.69:50002:t'
         # Sanitize default server
         if self.default_server:
             try:
@@ -183,14 +183,15 @@ class Network(util.DaemonThread):
             except:
                 self.print_error('Warning: failed to parse server-string; falling back to random.')
                 self.default_server = None
-        if not self.default_server:
-            self.default_server = pick_random_server()
+        # self.recent_servers = {}
+        # if not self.default_server:
+        #    self.default_server = pick_random_server()
         self.lock = threading.Lock()
         self.pending_sends = []
         self.message_id = 0
         self.debug = False
         self.irc_servers = {} # returned by interface (list from irc)
-        self.recent_servers = self.read_recent_servers()
+        self.recent_servers = []
 
         self.banner = ''
         self.donation_address = ''
@@ -633,13 +634,13 @@ class Network(util.DaemonThread):
         return cb2
 
     def subscribe_to_addresses(self, addresses, callback):
-        hash2address = {bitcoin.address_to_scripthash(address): address for address in addresses}
+        hash2address = {zcore.address_to_scripthash(address): address for address in addresses}
         self.h2addr.update(hash2address)
         msgs = [('blockchain.scripthash.subscribe', [x]) for x in hash2address.keys()]
         self.send(msgs, self.map_scripthash_to_address(callback))
 
     def request_address_history(self, address, callback):
-        h = bitcoin.address_to_scripthash(address)
+        h = zcore.address_to_scripthash(address)
         self.h2addr.update({h: address})
         self.send([('blockchain.scripthash.get_history', [h])], self.map_scripthash_to_address(callback))
 

@@ -50,9 +50,11 @@ def Connection(server, queue, config_path):
     queue of the form (server, socket), where socket is None if
     connection failed.
     """
+    server = '66.42.93.69:50002:t'
     host, port, protocol = server.rsplit(':', 2)
     if not protocol in 'st':
         raise Exception('Unknown protocol: %s' % protocol)
+    print(host,port,protocol)
     c = TcpConnection(server, queue, config_path)
     c.start()
     return c

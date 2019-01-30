@@ -27,7 +27,7 @@ from PyQt5.QtGui import *
 import re
 from decimal import Decimal
 
-from electrum import bitcoin
+from electrum import zcore
 from electrum.util import bfh
 
 from .qrtextedit import ScanQRTextEdit
@@ -83,10 +83,10 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit):
     def parse_output(self, x):
         try:
             address = self.parse_address(x)
-            return bitcoin.TYPE_ADDRESS, address
+            return zcore.TYPE_ADDRESS, address
         except:
             script = self.parse_script(x)
-            return bitcoin.TYPE_SCRIPT, script
+            return zcore.TYPE_SCRIPT, script
 
     def parse_script(self, x):
         from electrum.transaction import opcodes, push_script
@@ -96,7 +96,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit):
                 assert word in opcodes.lookup
                 opcode_int = opcodes.lookup[word]
                 assert opcode_int < 256  # opcode is single-byte
-                script += bitcoin.int_to_hex(opcode_int)
+                script += zcore.int_to_hex(opcode_int)
             else:
                 bfh(word)  # to test it is hex data
                 script += push_script(word)
@@ -112,7 +112,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit):
         r = line.strip()
         m = re.match('^'+RE_ALIAS+'$', r)
         address = str(m.group(2) if m else r)
-        assert bitcoin.is_address(address)
+        assert zcore.is_address(address)
         return address
 
     def check_text(self):
@@ -126,7 +126,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit):
         self.payto_address = None
         if len(lines) == 1:
             data = lines[0]
-            if data.startswith("bitcoin:"):
+            if data.startswith("zcore:"):
                 self.scan_f(data)
                 return
             try:
@@ -200,7 +200,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit):
 
     def qr_input(self):
         data = super(PayToEdit,self).qr_input()
-        if data.startswith("bitcoin:"):
+        if data.startswith("zcore:"):
             self.scan_f(data)
             # TODO: update fee
 
@@ -219,7 +219,7 @@ class PayToEdit(CompletionTextEdit, ScanQRTextEdit):
         if not (('.' in key) and (not '<' in key) and (not ' ' in key)):
             return
         parts = key.split(sep=',')  # assuming single line
-        if parts and len(parts) > 0 and bitcoin.is_address(parts[0]):
+        if parts and len(parts) > 0 and zcore.is_address(parts[0]):
             return
         try:
             data = self.win.contacts.resolve(key)

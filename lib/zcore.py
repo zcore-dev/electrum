@@ -33,7 +33,6 @@ from . import constants
 from . import ecc
 from .crypto import Hash, sha256, hash_160
 
-
 ################################## transactions
 
 COINBASE_MATURITY = 100
@@ -84,7 +83,7 @@ def script_num_to_hex(i: int) -> str:
 
 
 def var_int(i: int) -> str:
-    # https://en.bitcoin.it/wiki/Protocol_specification#Variable_length_integer
+    # https://en.zcore.it/wiki/Protocol_specification#Variable_length_integer
     if i<0xfd:
         return int_to_hex(i)
     elif i<=0xffff:
@@ -271,6 +270,7 @@ def address_to_script(addr, *, net=None):
         script += push_script(bh2u(bytes(witprog)))
         return script
     addrtype, hash_160 = b58_address_to_hash160(addr)
+    
     if addrtype == net.ADDRTYPE_P2PKH:
         script = '76a9'                                      # op_dup, op_hash_160
         script += push_script(bh2u(hash_160))
@@ -477,7 +477,7 @@ def is_b58_address(addr):
         addrtype, h = b58_address_to_hash160(addr)
     except Exception as e:
         return False
-    if addrtype not in [constants.net.ADDRTYPE_P2PKH, constants.net.ADDRTYPE_P2SH]:
+    if addrtype != constants.net.ADDRTYPE_P2PKH and addrtype != constants.net.ADDRTYPE_P2SH:
         return False
     return addr == hash160_to_b58_address(h, addrtype)
 

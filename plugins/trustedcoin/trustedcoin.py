@@ -31,10 +31,10 @@ from urllib.parse import urljoin
 from urllib.parse import quote
 
 import electrum
-from electrum import bitcoin, ecc
+from electrum import zcore, ecc
 from electrum import constants
 from electrum import keystore
-from electrum.bitcoin import *
+from electrum.zcore import *
 from electrum.mnemonic import Mnemonic
 from electrum import version
 from electrum.wallet import Multisig_Wallet, Deterministic_Wallet
@@ -294,7 +294,7 @@ class Wallet_2fa(Multisig_Wallet):
 
 def get_user_id(storage):
     def make_long_id(xpub_hot, xpub_cold):
-        return bitcoin.sha256(''.join(sorted([xpub_hot, xpub_cold])))
+        return zcore.sha256(''.join(sorted([xpub_hot, xpub_cold])))
     xpub1 = storage.get('x1/')['xpub']
     xpub2 = storage.get('x2/')['xpub']
     long_id = make_long_id(xpub1, xpub2)
@@ -303,15 +303,15 @@ def get_user_id(storage):
 
 def make_xpub(xpub, s):
     version, _, _, _, c, cK = deserialize_xpub(xpub)
-    cK2, c2 = bitcoin._CKD_pub(cK, c, s)
-    return bitcoin.serialize_xpub(version, c2, cK2)
+    cK2, c2 = zcore._CKD_pub(cK, c, s)
+    return zcore.serialize_xpub(version, c2, cK2)
 
 def make_billing_address(wallet, num):
     long_id, short_id = wallet.get_user_id()
     xpub = make_xpub(get_billing_xpub(), long_id)
     version, _, _, _, c, cK = deserialize_xpub(xpub)
-    cK, c = bitcoin.CKD_pub(cK, c, num)
-    return bitcoin.public_key_to_p2pkh(cK)
+    cK, c = zcore.CKD_pub(cK, c, num)
+    return zcore.public_key_to_p2pkh(cK)
 
 
 class TrustedCoinPlugin(BasePlugin):
@@ -324,7 +324,7 @@ class TrustedCoinPlugin(BasePlugin):
 
     @staticmethod
     def is_valid_seed(seed):
-        return bitcoin.is_new_seed(seed, SEED_PREFIX)
+        return zcore.is_new_seed(seed, SEED_PREFIX)
 
     def is_available(self):
         return True

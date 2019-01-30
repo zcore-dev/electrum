@@ -25,7 +25,7 @@
 import webbrowser
 
 from electrum.i18n import _
-from electrum.bitcoin import is_address
+from electrum.zcore import is_address
 from electrum.util import block_explorer_URL
 from electrum.plugins import run_hook
 from PyQt5.QtGui import *

@@ -16,7 +16,7 @@ from btchip.btchip import *
 from electrum.i18n import _
 from electrum_gui.qt.util import *
 from electrum.util import print_msg
-from electrum import constants, bitcoin
+from electrum import constants, zcore
 from electrum_gui.qt.qrcodewidget import QRCodeWidget
 
 
@@ -131,7 +131,7 @@ class LedgerAuthDialog(QDialog):
                     text = addr[:i] + '<u><b>' + addr[i:i+1] + '</u></b>' + addr[i+1:]
                 else:
                     # pin needs to be created from mainnet address
-                    addr_mainnet = bitcoin.script_to_address(bitcoin.address_to_script(addr), net=constants.BitcoinMainnet)
+                    addr_mainnet = zcore.script_to_address(zcore.address_to_script(addr), net=constants.BitcoinMainnet)
                     addr_mainnet = addr_mainnet[:i] + '<u><b>' + addr_mainnet[i:i+1] + '</u></b>' + addr_mainnet[i+1:]
                     text = str(addr) + '\n' + str(addr_mainnet)
                 self.addrtext.setHtml(str(text))

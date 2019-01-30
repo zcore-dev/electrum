@@ -2,8 +2,8 @@ import base64
 import unittest
 import sys
 
-from lib import bitcoin
-from lib.bitcoin import (
+from lib import zcore
+from lib.zcore import (
     public_key_to_p2pkh,
     bip32_root, bip32_public_derivation, bip32_private_derivation,
     Hash, address_from_private_key,
@@ -695,3 +695,4 @@ class Test_seeds(SequentialTestCase):
     def test_seed_type(self):
         for seed_words, _type in self.mnemonics:
             self.assertEqual(_type, seed_type(seed_words), msg=seed_words)
+

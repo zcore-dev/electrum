@@ -37,7 +37,7 @@ try:
 except ImportError:
     sys.exit("Error: could not find paymentrequest_pb2.py. Create it with 'protoc --proto_path=lib/ --python_out=lib/ lib/paymentrequest.proto'")
 
-from . import bitcoin
+from . import zcore
 from . import ecc
 from . import util
 from .util import print_error, bh2u, bfh
@@ -46,7 +46,7 @@ from . import transaction
 from . import x509
 from . import rsakey
 
-from .bitcoin import TYPE_ADDRESS
+from .zcore import TYPE_ADDRESS
 
 REQUEST_HEADERS = {'Accept': 'application/bitcoin-paymentrequest', 'User-Agent': 'Electrum'}
 ACK_HEADERS = {'Content-Type':'application/bitcoin-payment','Accept':'application/bitcoin-paymentack','User-Agent':'Electrum'}
@@ -116,7 +116,7 @@ class PaymentRequest:
     def parse(self, r):
         if self.error:
             return
-        self.id = bh2u(bitcoin.sha256(r)[0:16])
+        self.id = bh2u(zcore.sha256(r)[0:16])
         try:
             self.data = pb2.PaymentRequest()
             self.data.ParseFromString(r)
@@ -323,7 +323,7 @@ def sign_request_with_alias(pr, alias, alias_privkey):
     pr.pki_data = str(alias)
     message = pr.SerializeToString()
     ec_key = ecc.ECPrivkey(alias_privkey)
-    compressed = bitcoin.is_compressed(alias_privkey)
+    compressed = zcore.is_compressed(alias_privkey)
     pr.signature = ec_key.sign_message(message, compressed)
 
 

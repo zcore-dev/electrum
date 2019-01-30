@@ -2,7 +2,7 @@
 
 import sys
 import time
-from electrum import bitcoin
+from electrum import zcore
 from electrum import SimpleConfig, Network
 from electrum.util import print_msg, json_encode
 
@@ -12,7 +12,7 @@ except Exception:
     print("usage: watch_address <bitcoin_address>")
     sys.exit(1)
 
-sh = bitcoin.address_to_scripthash(addr)
+sh = zcore.address_to_scripthash(addr)
 
 # start network
 c = SimpleConfig()

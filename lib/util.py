@@ -576,7 +576,7 @@ mainnet_block_explorers = {
                         {'tx': 'tx/', 'addr': 'address/'}),
     'BlockCypher.com': ('https://live.blockcypher.com/btc/',
                         {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockchair.com': ('https://blockchair.com/bitcoin/',
+    'Blockchair.com': ('https://blockchair.com/zcore/',
                         {'tx': 'transaction/', 'addr': 'address/'}),
     'blockonomics.co': ('https://www.blockonomics.co/',
                         {'tx': 'api/tx?txid=', 'addr': '#/search?q='}),
@@ -616,17 +616,17 @@ def block_explorer_URL(config, kind, item):
 #urldecode = lambda x: _ud.sub(lambda m: chr(int(m.group(1), 16)), x)
 
 def parse_URI(uri, on_pr=None):
-    from . import bitcoin
-    from .bitcoin import COIN
+    from . import zcore
+    from .zcore import COIN
 
     if ':' not in uri:
-        if not bitcoin.is_address(uri):
-            raise Exception("Not a bitcoin address")
+        if not zcore.is_address(uri):
+            raise Exception("Not a zcore address")
         return {'address': uri}
 
     u = urllib.parse.urlparse(uri)
-    if u.scheme != 'bitcoin':
-        raise Exception("Not a bitcoin URI")
+    if u.scheme != 'zcore':
+        raise Exception("Not a zcore URI")
     address = u.path
 
     # python for android fails to parse query
@@ -642,8 +642,8 @@ def parse_URI(uri, on_pr=None):
 
     out = {k: v[0] for k, v in pq.items()}
     if address:
-        if not bitcoin.is_address(address):
-            raise Exception("Invalid bitcoin address:" + address)
+        if not zcore.is_address(address):
+            raise Exception("Invalid zcore address:" + address)
         out['address'] = address
     if 'amount' in out:
         am = out['amount']
@@ -662,7 +662,7 @@ def parse_URI(uri, on_pr=None):
     if 'exp' in out:
         out['exp'] = int(out['exp'])
     if 'sig' in out:
-        out['sig'] = bh2u(bitcoin.base_decode(out['sig'], None, base=58))
+        out['sig'] = bh2u(zcore.base_decode(out['sig'], None, base=58))
 
     r = out.get('r')
     sig = out.get('sig')
@@ -685,15 +685,15 @@ def parse_URI(uri, on_pr=None):
 
 
 def create_URI(addr, amount, message):
-    from . import bitcoin
-    if not bitcoin.is_address(addr):
+    from . import zcore
+    if not zcore.is_address(addr):
         return ""
     query = []
     if amount:
         query.append('amount=%s'%format_satoshis_plain(amount))
     if message:
         query.append('message=%s'%urllib.parse.quote(message))
-    p = urllib.parse.ParseResult(scheme='bitcoin', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+    p = urllib.parse.ParseResult(scheme='zcore', netloc='', path=addr, params='', query='&'.join(query), fragment='')
     return urllib.parse.urlunparse(p)
 
 

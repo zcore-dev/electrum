@@ -10,7 +10,7 @@ import csv
 import decimal
 from decimal import Decimal
 
-from .bitcoin import COIN
+from .zcore import COIN
 from .i18n import _
 from .util import PrintError, ThreadJob, make_dir
 
